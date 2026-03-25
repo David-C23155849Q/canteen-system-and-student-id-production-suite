@@ -131,6 +131,7 @@ def get_latest_scan(request):
     return JsonResponse(data)
 
 
+
 def get_latest_scan(request):
     obj, _ = ScanStatus.objects.get_or_create(id=1)
     data = {'status': obj.status, 
