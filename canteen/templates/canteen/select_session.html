@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Start Meal Session</title>
+    <style>
+        :root { --primary: #2c3e50; --accent: #3498db; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: var(--primary); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .logo { height: 80px; margin-bottom: 20px; }
+        h1 { margin-bottom: 10px; font-weight: 300; }
+        p { opacity: 0.8; margin-bottom: 40px; }
+        
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 20px; 
+            width: 90%; 
+            max-width: 600px; 
+        }
+        .meal-card {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 40px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+        .meal-card:hover {
+            background: var(--accent);
+            transform: translateY(-5px);
+            border-color: white;
+        }
+        button { background: none; border: none; width: 100%; height: 100%; cursor: pointer; color: inherit; font: inherit; }
+    </style>
+</head>
+<body>
+    <img src="{% static 'logo.png' %}" alt="Logo" class="logo">
+    <h1>Welcome, {{ user.username }}</h1>
+    <p>Please select the current meal session to begin scanning.</p>
+
+    <form method="POST" class="grid">
+        {% csrf_token %}
+        <div class="meal-card"><button type="submit" name="meal_type" value="Breakfast">🍳 Breakfast</button></div>
+        <div class="meal-card"><button type="submit" name="meal_type" value="Tea">☕ Tea Time</button></div>
+        <div class="meal-card"><button type="submit" name="meal_type" value="Lunch">🍱 Lunch</button></div>
+        <div class="meal-card"><button type="submit" name="meal_type" value="Supper">🍲 Supper</button></div>
+    </form>
+</body>
+</html>
