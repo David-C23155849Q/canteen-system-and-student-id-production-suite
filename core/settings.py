@@ -71,10 +71,9 @@ TEMPLATES = [
 
 
 
-# Change this from /dashboard/ to /select-session/
-LOGIN_REDIRECT_URL = '/canteen/select-session/'
-# Redirect to the login page after logout
-LOGOUT_REDIRECT_URL = '/accounts/login/'
+LOGIN_URL = 'login' 
+LOGIN_REDIRECT_URL = 'login_success_redirect' 
+LOGOUT_REDIRECT_URL = 'login'
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
@@ -113,11 +112,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+# Set specifically for Zimbabwe
+TIME_ZONE = 'Africa/Harare' 
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -125,6 +122,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

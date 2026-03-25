@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canteen Management System</title>
+    <title>Canteen Monitor | {{ user.username }}</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -14,7 +14,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             margin: 0;
             background-color: var(--primary);
             color: white;
@@ -25,17 +25,6 @@
             min-height: 100vh;
         }
 
-        /* morgenster tchers logo */
-        .logo-container {
-            margin-bottom: 15px;
-        }
-        
-        .college-logo {
-            height: 60px; 
-            width: auto;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-        }
-
         /* Status Banner */
         .header-panel {
             width: 100%;
@@ -43,12 +32,19 @@
             text-align: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             margin-bottom: 30px;
+            transition: all 0.5s ease;
         }
 
+        .college-logo { height: 70px; margin-bottom: 10px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); }
         .status-title { font-size: 3rem; font-weight: 800; margin: 0; letter-spacing: 2px; }
         .status-msg { font-size: 1.5rem; opacity: 0.9; margin-top: 10px; }
 
-        /* Main Content Container */
+        /* Logout & Nav Buttons */
+        .top-nav { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; }
+        .nav-btn { background: var(--glass); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 0.9rem; }
+        .nav-btn:hover { background: rgba(255,255,255,0.2); }
+
+        /* Main Container */
         .container {
             width: 90%;
             max-width: 800px;
@@ -59,11 +55,9 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* History Table */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2); padding: 12px; font-size: 1.1rem; }
+        th { text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2); padding: 12px; }
         td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        tr:nth-child(even) { background: rgba(255,255,255,0.02); }
 
         .badge {
             padding: 5px 12px;
@@ -72,62 +66,70 @@
             font-weight: bold;
             background: #3498db;
         }
-
-        /* Pulse Animation for Waiting */
-        .pulse { animation: pulse-animation 2s infinite; }
-        @keyframes pulse-animation {
-            0% { opacity: 1; }
-            50% { opacity: 0.6; }
-            100% { opacity: 1; }
-        }
     </style>
 </head>
-<body id="bg">
+<body>
 
     <div class="header-panel" id="header">
-
-        <!--- logout button-->
-        <div style="position: absolute; top: 20px; right: 20px;">
-            <form action="{% url 'logout' %}" method="post">
+        <div class="top-nav">
+            {% if user.is_staff or user.is_superuser %}
+                <a href="{% url 'student_dashboard' %}" class="nav-btn" style="background: #8e44ad; border-color: #9b59b6;">
+                    📇 Student Records
+                </a>
+            {% endif %}
+        
+            <a href="{% url 'analytics' %}" class="nav-btn">📊 Analytics</a>
+            <a href="{% url 'select_session' %}" class="nav-btn">🔄 Change Meal</a>
+            
+            <form action="{% url 'logout' %}" method="post" style="display:inline;">
                 {% csrf_token %}
-                <button type="submit" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
-                    Logout
-                </button>
+                <button type="submit" class="nav-btn" style="background: var(--error);">Logout</button>
             </form>
         </div>
 
-        <div class="logo-container">
-            <img src="{% static 'logo.png' %}" alt="College Logo" class="college-logo">
-        </div>
-
+        <img src="{% static 'logo.png' %}" alt="Logo" class="college-logo">
         <h1 class="status-title" id="status-text">SYSTEM READY</h1>
         <p class="status-msg" id="message-text">Place ID card under scanner</p>
     </div>
 
     <div class="container">
-        <h3>Recent Activity</h3>
+        <h3>Recent Activity (Today)</h3>
         <table>
             <thead>
                 <tr>
+                    <th>Profile</th>
                     <th>Student Name</th>
-                    <th>Meal</th>
-                    <th>Time</th>
+                    <th>Reg Number</th>
+                    <th>Meal Type</th>
+                    <th>Scan Time</th>
                 </tr>
             </thead>
             <tbody id="scan-history">
                 {% for log in recent_scans %}
                 <tr>
+                    <td style="width: 60px;">
+                        {% if log.student.photo %}
+                            <img src="{{ log.student.photo.url }}" 
+                                 style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2);">
+                        {% else %}
+                            <div style="width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                👤
+                            </div>
+                        {% endif %}
+                    </td>
                     <td>{{ log.student.full_name }}</td>
+                    <td>{{ log.student.student_id }}</td>
                     <td><span class="badge">{{ log.meal_type }}</span></td>
                     <td>{{ log.timestamp|date:"H:i:s" }}</td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="3">No scans recorded today</td></tr>
+                <tr><td colspan="5" style="text-align:center; padding: 40px; opacity: 0.5;">Waiting for first scan...</td></tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
+    <!--- success and decline sounds-->
     <audio id="sound-success" src="{% static 'success.mp3' %}"></audio>
     <audio id="sound-error" src="{% static 'error.mp3' %}"></audio>
 
@@ -136,12 +138,11 @@
             fetch('/canteen/get-latest-scan/')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.status === 'approved' || data.status === 'denied' || data.status === 'error') {
-                        updateUI(data.status, data.message);
-                        
-                        // If it's a success, refresh the page after 2 seconds to update the table
+                    if (data.status !== 'waiting') {
+                        updateUI(data.status, data.message, data.photo_url);
                         if (data.status === 'approved') {
-                            setTimeout(() => { location.reload(); }, 2000);
+                            // Short delay to let the user see the "Granted" message before refresh
+                            setTimeout(() => { location.reload(); }, 3000);
                         }
                     }
                 });
@@ -159,24 +160,22 @@
             if (status === 'approved') {
                 header.style.backgroundColor = "var(--success)";
                 statusText.innerText = "ACCESS GRANTED";
-                successAudio.play().catch(e => {});
+                successAudio.play().catch(() => {});
             } else {
                 header.style.backgroundColor = "var(--error)";
-                statusText.innerText = "ACCESS DENIED";
-                errorAudio.play().catch(e => {});
+                statusText.innerText = status.toUpperCase();
+                errorAudio.play().catch(() => {});
             }
             
             msgText.innerText = message;
 
+            // Reset UI after 3 seconds
             setTimeout(() => {
                 header.style.backgroundColor = "transparent";
                 statusText.innerText = "SYSTEM READY";
                 msgText.innerText = "Place ID card under scanner";
             }, 3000);
         }
-
-        // Allow audio on first click
-        document.body.addEventListener('click', () => { console.log("Audio Enabled"); }, {once: true});
     </script>
 </body>
 </html>

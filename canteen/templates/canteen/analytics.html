@@ -23,6 +23,54 @@
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
         th { color: #636e72; font-size: 0.85rem; }
+
+        /* Card styling for the filter bar */
+        .card { 
+            background: var(--card); 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+        }
+
+        /* Badge for meal types and status */
+        .badge {
+            background: #e1f5fe;
+            color: #0288d1;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            .nav-header, .btn, form, .btn-back { display: none !important; }
+            body { background: white; padding: 0; }
+            .card { box-shadow: none; border: 1px solid #eee; }
+        }
+
+        /* Table profile pics */
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .staff-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .staff-table th {
+            background: #fcfcfc;
+            border-bottom: 2px solid #eee;
+        }
+        .student-name-cell {
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -33,6 +81,7 @@
         <h2>Canteen Insights</h2>
     </div>
 
+    <!-- Stats -->
     <div class="stats-row">
         <div class="stat-card">
             <h3>Served Today</h3>
@@ -44,12 +93,12 @@
         </div>
     </div>
 
+    <!-- Charts and Staff Table -->
     <div class="charts-grid">
         <div class="chart-container">
             <h3>Attendance Trends (Last 7 Days)</h3>
             <canvas id="attendanceChart" height="150"></canvas>
         </div>
-
         <div class="table-container">
             <h3>Staff Activity</h3>
             <table>
@@ -70,6 +119,93 @@
         </div>
     </div>
 
+    <!-- Filters -->
+    <div class="card" style="margin-bottom: 20px;">
+        <form method="GET" style="display: flex; gap: 15px; align-items: flex-end;">
+            <div>
+                <label>Date:</label><br>
+                <input type="date" name="date" value="{{ request.GET.date }}" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+            </div>
+            <div>
+                <label>Session:</label><br>
+                <select name="session" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    <option value="">All Sessions</option>
+                    {% for m in meal_choices %}
+                        <option value="{{ m }}" {% if request.GET.session == m %}selected{% endif %}>{{ m }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn" style="background: #27ae60; color: white; border: none;">Apply Filters</button>
+            <a href="{% url 'analytics' %}" class="btn" style="background: #95a5a6; color: white; text-decoration: none;">Reset</a>
+            <button type="button" onclick="window.print()" class="btn" style="background: #f39c12; color: white; border: none; cursor: pointer;">🖨️ Print Page</button>
+            <a href="{% url 'export_pdf' %}" class="btn" style="background: #e74c3c; color: white; text-decoration: none;">📄 Download PDF</a>
+        </form>
+    </div>
+
+    <!-- High Risk Students Table with Prfile Pics -->
+    <div class="stats-row" style="margin-top: 30px; grid-template-columns: 1fr;">
+        <div class="chart-container" style="border-left: 5px solid #e74c3c;">
+            <h3 style="color: #e74c3c;">High Risk Students (Frequent Attempts)</h3>
+            <table class="staff-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Student ID</th>
+                        <th>Last Reason</th>
+                        <th style="text-align: right;">Total Flags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cheat in top_cheaters %}
+                    <tr>
+                        <td class="student-name-cell" style="display: flex; align-items: center; gap: 10px;">
+                            {% if cheat.student__photo %}
+                                <img src="/media/{{ cheat.student__photo }}" class="profile-pic" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'logo.png' %}" class="profile-pic" style="width: 40px; height: 40px; border-radius: 50%;">
+                            {% endif %}
+                            <b>{{ cheat.student__full_name|default:"Unknown User" }}</b>
+                        </td>
+                        <td><code>{{ cheat.student__student_id|default:cheat.invalid_qr }}</code></td>
+                        <td><span class="badge" style="background: #ffebee; color: #c62828;">Flagged</span></td>
+                        <td style="text-align: right; font-weight: bold; color: #e74c3c;">{{ cheat.attempts }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align:center;">No cheat attempts recorded. Great!</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Session History -->
+    <div class="card" style="margin-top: 20px;">
+        <h3>Detailed Session History</h3>
+        <table class="staff-table">
+            <thead>
+                <tr>
+                    <th>Staff Member</th>
+                    <th>Session Type</th>
+                    <th>Started At</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in session_history %}
+                <tr>
+                    <td>{{ s.staff_member.username }}</td>
+                    <td><span class="badge">{{ s.meal_type }}</span></td>
+                    <td>{{ s.start_time|date:"d M, H:i" }}</td>
+                    <td>{% if s.is_active %}<b style="color:green;">ACTIVE</b>{% else %}Closed{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Chart JS -->
     <script>
         const ctx = document.getElementById('attendanceChart').getContext('2d');
         new Chart(ctx, {
