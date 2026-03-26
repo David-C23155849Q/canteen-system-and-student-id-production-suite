@@ -3,62 +3,119 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Start Meal Session</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Selection | System Sync</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        :root { --primary: #2c3e50; --accent: #3498db; }
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: var(--primary); 
-            color: white; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            margin: 0; 
-        }
-        .logo { height: 80px; margin-bottom: 20px; }
-        h1 { margin-bottom: 10px; font-weight: 300; }
-        p { opacity: 0.8; margin-bottom: 40px; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 20px; 
-            width: 90%; 
-            max-width: 600px; 
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f1f5f9; /* Slightly darker background to make white cards pop more */
+            color: #0f172a;
         }
-        .meal-card {
-            background: rgba(255,255,255,0.1);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 40px 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: white;
+
+        .meal-btn-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
-        .meal-card:hover {
-            background: var(--accent);
-            transform: translateY(-5px);
-            border-color: white;
+
+        /* High-Visibility Focus State (Crucial for accessibility) */
+        .meal-btn-card:focus {
+            outline: 4px solid #2563eb;
+            outline-offset: 4px;
         }
-        button { background: none; border: none; width: 100%; height: 100%; cursor: pointer; color: inherit; font: inherit; }
+
+        .meal-btn-card:hover {
+            border-color: #cbd5e1;
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .meal-btn-card:active {
+            transform: scale(0.95);
+            background-color: #f8fafc;
+        }
+
+        /* Border accents using high-contrast colors */
+        .accent-breakfast { background-color: #b45309; } /* Darker Amber */
+        .accent-tea { background-color: #0891b2; }       /* Darker Cyan */
+        .accent-lunch { background-color: #047857; }     /* Darker Emerald */
+        .accent-supper { background-color: #4338ca; }    /* Darker Indigo */
+
+        .time-badge {
+            background-color: #334155;
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
     </style>
 </head>
-<body>
-    <img src="{% static 'logo.png' %}" alt="Logo" class="logo">
-    <h1>Welcome, {{ user.username }}</h1>
-    <p>Please select the current meal session to begin scanning.</p>
 
-    <form method="POST" class="grid">
-        {% csrf_token %}
-        <div class="meal-card"><button type="submit" name="meal_type" value="Breakfast">🍳 Breakfast</button></div>
-        <div class="meal-card"><button type="submit" name="meal_type" value="Tea">☕ Tea Time</button></div>
-        <div class="meal-card"><button type="submit" name="meal_type" value="Lunch">🍱 Lunch</button></div>
-        <div class="meal-card"><button type="submit" name="meal_type" value="Supper">🍲 Supper</button></div>
-    </form>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-3xl">
+        <header class="text-center mb-10">
+            <img src="{% static 'logo.png' %}" alt="Logo" class="h-20 mx-auto mb-4 drop-shadow-sm">
+            <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">Canteen Session</h1>
+            <p class="text-slate-600 text-lg mt-2">Logged in as: <strong class="text-blue-700 font-bold">{{ user.username }}</strong></p>
+        </header>
+
+        <form method="POST" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {% csrf_token %}
+            
+            <button type="submit" name="meal_type" value="Breakfast" class="meal-btn-card group p-6 rounded-3xl flex flex-col items-center">
+                <div class="absolute top-0 left-0 w-full h-2 rounded-t-3xl accent-breakfast"></div>
+                <div class="w-20 h-20 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-700 mb-4 border border-amber-100 group-hover:bg-amber-100 transition-colors">
+                    <i class="fa-solid fa-sun text-4xl"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-800">Breakfast</h2>
+                <p class="time-badge text-xs mt-4 px-4 py-1.5 rounded-lg shadow-sm">06:00 — 09:00</p>
+            </button>
+
+            <button type="submit" name="meal_type" value="Tea" class="meal-btn-card group p-6 rounded-3xl flex flex-col items-center">
+                <div class="absolute top-0 left-0 w-full h-2 rounded-t-3xl accent-tea"></div>
+                <div class="w-20 h-20 bg-cyan-50 rounded-2xl flex items-center justify-center text-cyan-700 mb-4 border border-cyan-100 group-hover:bg-cyan-100 transition-colors">
+                    <i class="fa-solid fa-mug-hot text-4xl"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-800">Tea Time</h2>
+                <p class="time-badge text-xs mt-4 px-4 py-1.5 rounded-lg shadow-sm">10:00 — 11:30</p>
+            </button>
+
+            <button type="submit" name="meal_type" value="Lunch" class="meal-btn-card group p-6 rounded-3xl flex flex-col items-center">
+                <div class="absolute top-0 left-0 w-full h-2 rounded-t-3xl accent-lunch"></div>
+                <div class="w-20 h-20 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-700 mb-4 border border-emerald-100 group-hover:bg-emerald-100 transition-colors">
+                    <i class="fa-solid fa-utensils text-4xl"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-800">Lunch</h2>
+                <p class="time-badge text-xs mt-4 px-4 py-1.5 rounded-lg shadow-sm">12:30 — 14:30</p>
+            </button>
+
+            <button type="submit" name="meal_type" value="Supper" class="meal-btn-card group p-6 rounded-3xl flex flex-col items-center">
+                <div class="absolute top-0 left-0 w-full h-2 rounded-t-3xl accent-supper"></div>
+                <div class="w-20 h-20 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-700 mb-4 border border-indigo-100 group-hover:bg-indigo-100 transition-colors">
+                    <i class="fa-solid fa-moon text-4xl"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-800">Supper</h2>
+                <p class="time-badge text-xs mt-4 px-4 py-1.5 rounded-lg shadow-sm">18:00 — 20:00</p>
+            </button>
+        </form>
+
+        <footer class="mt-12 text-center border-t border-slate-200 pt-8">
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button class="inline-flex items-center gap-2 px-6 py-3 bg-red-50 text-red-700 font-bold rounded-2xl border-2 border-red-100 hover:bg-red-100 hover:border-red-200 transition-all">
+                    <i class="fa-solid fa-power-off"></i>
+                    Exit Terminal
+                </button>
+            </form>
+            <p class="text-slate-400 text-xs mt-6 font-semibold tracking-widest uppercase">System Hardware Secure</p>
+        </footer>
+    </div>
+
 </body>
 </html>

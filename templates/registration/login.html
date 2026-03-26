@@ -1,25 +1,118 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Staff Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Login | Canteen Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: sans-serif; background: #2c3e50; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-card { background: rgba(255,255,255,0.1); padding: 40px; border-radius: 15px; backdrop-filter: blur(10px); width: 300px; text-align: center; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; }
-        button { background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; }
-        .logo { height: 60px; margin-bottom: 20px; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc; /* Soft off-white to prevent eye strain */
+            color: #1e293b; /* Deep slate for high contrast */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0; /* Clear, solid border for edge definition */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* High contrast Django Form styling */
+        form p {
+            margin-bottom: 1.5rem;
+        }
+
+        form label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 0.5rem;
+        }
+
+        form input {
+            width: 100%;
+            background: #ffffff !important;
+            border: 2px solid #cbd5e1 !important; /* Thicker borders for visibility */
+            border-radius: 0.5rem !important;
+            padding: 0.875rem 1rem !important;
+            color: #0f172a !important;
+            font-size: 1rem !important;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        form input:focus {
+            border-color: #2563eb !important; /* Strong blue focus */
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Error messages if they exist in form.as_p */
+        .errorlist {
+            color: #dc2626;
+            font-size: 0.875rem;
+            font-weight: 600;
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
-    <div class="login-card">
-        <img src="{% static 'logo.png' %}" class="logo">
-        <h2>Canteen Staff Login</h2>
-        <form method="post">
+
+    <div class="login-card w-full max-w-[420px] p-8 md:p-12 rounded-2xl animate-fade-in">
+        
+        <div class="text-center mb-8">
+            <img src="{% static 'logo.png' %}" class="h-14 w-auto mx-auto mb-6" alt="School Logo">
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Staff Login</h1>
+            <p class="text-slate-500 mt-2 font-medium">Canteen Monitoring System</p>
+        </div>
+
+        <form method="post" class="space-y-6">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Login</button>
+            
+            <div class="text-left">
+                {{ form.as_p }}
+            </div>
+
+            <button type="submit" class="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-lg rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-3">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                Sign In
+            </button>
         </form>
+
+        <div class="mt-10 pt-6 border-t border-slate-100 text-center">
+            <div class="flex items-center justify-center gap-2 text-slate-400 font-semibold text-xs uppercase tracking-widest">
+                <i class="fa-solid fa-lock text-emerald-600"></i>
+                Secure Access Portal
+            </div>
+        </div>
     </div>
+
+    <script>
+        // Smooth entry for better focus
+        document.addEventListener('DOMContentLoaded', () => {
+            const card = document.querySelector('.login-card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease-out';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+
 </body>
 </html>

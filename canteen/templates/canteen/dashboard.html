@@ -5,177 +5,202 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canteen Monitor | {{ user.username }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        :root {
-            --primary: #2c3e50;
-            --success: #27ae60;
-            --error: #e74c3c;
-            --glass: rgba(255, 255, 255, 0.1);
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        
         body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            background-color: var(--primary);
-            color: white;
-            transition: background 0.4s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f1f5f9; /* Light grey/blue background */
+            color: #0f172a;
         }
 
-        /* Status Banner */
         .header-panel {
-            width: 100%;
-            padding: 40px 0;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            margin-bottom: 30px;
-            transition: all 0.5s ease;
+            background: #ffffff;
+            border-bottom: 4px solid #e2e8f0;
+            transition: all 0.4s ease;
         }
 
-        .college-logo { height: 70px; margin-bottom: 10px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); }
-        .status-title { font-size: 3rem; font-weight: 800; margin: 0; letter-spacing: 2px; }
-        .status-msg { font-size: 1.5rem; opacity: 0.9; margin-top: 10px; }
+        /* High Visibility Status Colors */
+        .status-ready { border-color: #3b82f6; color: #1e40af; }
+        .status-approved { border-color: #16a34a !important; background-color: #f0fdf4 !important; }
+        .status-error { border-color: #dc2626 !important; background-color: #fef2f2 !important; }
 
-        /* Logout & Nav Buttons */
-        .top-nav { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; }
-        .nav-btn { background: var(--glass); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 0.9rem; }
-        .nav-btn:hover { background: rgba(255,255,255,0.2); }
-
-        /* Main Container */
-        .container {
-            width: 90%;
-            max-width: 800px;
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
+        .table-container {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2); padding: 12px; }
-        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
 
-        .badge {
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            background: #3498db;
+        .student-photo {
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
         }
     </style>
 </head>
-<body>
 
-    <div class="header-panel" id="header">
-        <div class="top-nav">
-            {% if user.is_staff or user.is_superuser %}
-                <a href="{% url 'student_dashboard' %}" class="nav-btn" style="background: #8e44ad; border-color: #9b59b6;">
-                    📇 Student Records
-                </a>
-            {% endif %}
+<body class="min-h-screen">
+
+    <nav class="w-full px-6 py-4 flex justify-between items-center bg-slate-900 text-white sticky top-0 z-50 shadow-lg">
+        <div class="flex items-center gap-4">
+            <img src="{% static 'logo.png' %}" class="h-10 brightness-200">
+            <span class="font-bold tracking-tight border-l border-slate-700 pl-4">LIVE MONITOR</span>
+        </div>
         
-            <a href="{% url 'analytics' %}" class="nav-btn">📊 Analytics</a>
-            <a href="{% url 'select_session' %}" class="nav-btn">🔄 Change Meal</a>
-            
-            <form action="{% url 'logout' %}" method="post" style="display:inline;">
+        <div class="flex items-center gap-4">
+            <a href="{% url 'analytics' %}" class="px-4 py-2 hover:bg-slate-800 rounded-lg font-bold text-sm transition">
+                <i class="fa-solid fa-chart-line mr-2"></i> Records
+            </a>
+            <a href="{% url 'select_session' %}" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold text-sm transition">
+                Change Meal
+            </a>
+            <form action="{% url 'logout' %}" method="post" class="inline">
                 {% csrf_token %}
-                <button type="submit" class="nav-btn" style="background: var(--error);">Logout</button>
+                <button class="p-2 px-4 bg-red-600 hover:bg-red-500 rounded-lg transition">
+                    <i class="fa-solid fa-power-off"></i>
+                </button>
             </form>
         </div>
+    </nav>
 
-        <img src="{% static 'logo.png' %}" alt="Logo" class="college-logo">
-        <h1 class="status-title" id="status-text">SYSTEM READY</h1>
-        <p class="status-msg" id="message-text">Place ID card under scanner</p>
-    </div>
+    <main class="container mx-auto px-4 py-8 max-w-6xl">
+        
+        <div id="header" class="header-panel rounded-2xl p-10 text-center mb-8 border-t-8 status-ready shadow-xl">
+            <div id="status-badge" class="mb-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100 text-blue-700 font-extrabold text-xs uppercase tracking-wider">
+                <span class="relative flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"></span>
+                </span>
+                System Monitoring
+            </div>
+            
+            <h1 id="status-text" class="text-5xl font-extrabold tracking-tight mb-2 text-slate-900 transition-all">SYSTEM READY</h1>
+            <p id="message-text" class="text-slate-500 text-xl font-medium">Please scan ID card to proceed</p>
+        </div>
 
-    <div class="container">
-        <h3>Recent Activity (Today)</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Profile</th>
-                    <th>Student Name</th>
-                    <th>Reg Number</th>
-                    <th>Meal Type</th>
-                    <th>Scan Time</th>
-                </tr>
-            </thead>
-            <tbody id="scan-history">
-                {% for log in recent_scans %}
-                <tr>
-                    <td style="width: 60px;">
-                        {% if log.student.photo %}
-                            <img src="{{ log.student.photo.url }}" 
-                                 style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2);">
-                        {% else %}
-                            <div style="width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
-                                👤
-                            </div>
-                        {% endif %}
-                    </td>
-                    <td>{{ log.student.full_name }}</td>
-                    <td>{{ log.student.student_id }}</td>
-                    <td><span class="badge">{{ log.meal_type }}</span></td>
-                    <td>{{ log.timestamp|date:"H:i:s" }}</td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="5" style="text-align:center; padding: 40px; opacity: 0.5;">Waiting for first scan...</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        <div class="table-container overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-bold text-slate-700 uppercase tracking-wide text-sm">Recent Traffic Activity</h3>
+            </div>
 
-    <!--- success and decline sounds-->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr>
+                            <th class="p-5">Student Information</th>
+                            <th class="p-5 text-center">ID Number</th>
+                            <th class="p-5 text-center">Session</th>
+                            <th class="p-5 text-right">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {% for log in recent_scans %}
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="p-5">
+                                <div class="flex items-center gap-4">
+                                    {% if log.student.photo %}
+                                    <img src="{{ log.student.photo.url }}" class="w-14 h-14 student-photo object-cover">
+                                    {% else %}
+                                    <div class="w-14 h-14 student-photo bg-slate-100 flex items-center justify-center text-2xl">👤</div>
+                                    {% endif %}
+                                    <div>
+                                        <p class="font-bold text-slate-900 text-lg leading-tight">{{ log.student.full_name }}</p>
+                                        <p class="text-sm text-blue-600 font-bold uppercase tracking-tighter">Verified Member</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-5 text-center font-bold text-slate-600 text-lg">{{ log.student.student_id }}</td>
+                            <td class="p-5 text-center">
+                                <span class="px-4 py-1 text-xs font-black rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                                    {{ log.meal_type }}
+                                </span>
+                            </td>
+                            <td class="p-5 text-right font-bold text-slate-500">{{ log.timestamp|date:"H:i:s" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="p-24 text-center">
+                                <i class="fa-solid fa-id-card text-5xl text-slate-200 mb-4"></i>
+                                <p class="text-slate-400 font-bold text-xl uppercase tracking-widest">Awaiting First Scan...</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div id="scan-flash" class="fixed inset-0 pointer-events-none opacity-0 z-[100] transition duration-200"></div>
+
     <audio id="sound-success" src="{% static 'success.mp3' %}"></audio>
     <audio id="sound-error" src="{% static 'error.mp3' %}"></audio>
 
     <script>
-        function checkScanner() {
-            fetch('/canteen/get-latest-scan/')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status !== 'waiting') {
-                        updateUI(data.status, data.message, data.photo_url);
-                        if (data.status === 'approved') {
-                            // Short delay to let the user see the "Granted" message before refresh
-                            setTimeout(() => { location.reload(); }, 3000);
-                        }
-                    }
-                });
-        }
-
-        setInterval(checkScanner, 1000);
-
         function updateUI(status, message) {
             const header = document.getElementById('header');
             const statusText = document.getElementById('status-text');
             const msgText = document.getElementById('message-text');
-            const successAudio = document.getElementById('sound-success');
-            const errorAudio = document.getElementById('sound-error');
+            const flash = document.getElementById('scan-flash');
+            const badge = document.getElementById('status-badge');
+
+            // Visual Trigger Flash
+            flash.classList.remove('opacity-0');
+            flash.style.backgroundColor = status === 'approved' ? 'rgba(22, 163, 74, 0.4)' : 'rgba(220, 38, 38, 0.4)';
+            setTimeout(() => flash.classList.add('opacity-0'), 300);
 
             if (status === 'approved') {
-                header.style.backgroundColor = "var(--success)";
+                header.className = "header-panel rounded-2xl p-10 text-center mb-8 border-t-8 shadow-2xl status-approved";
                 statusText.innerText = "ACCESS GRANTED";
-                successAudio.play().catch(() => {});
+                statusText.className = "text-5xl font-extrabold tracking-tight mb-2 text-green-700";
+                badge.className = "mb-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-200 text-green-800 font-extrabold text-xs uppercase";
+                document.getElementById('sound-success').play().catch(()=>{});
             } else {
-                header.style.backgroundColor = "var(--error)";
+                header.className = "header-panel rounded-2xl p-10 text-center mb-8 border-t-8 shadow-2xl status-error";
                 statusText.innerText = status.toUpperCase();
-                errorAudio.play().catch(() => {});
+                statusText.className = "text-5xl font-extrabold tracking-tight mb-2 text-red-700";
+                badge.className = "mb-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-200 text-red-800 font-extrabold text-xs uppercase";
+                document.getElementById('sound-error').play().catch(()=>{});
             }
-            
-            msgText.innerText = message;
 
-            // Reset UI after 3 seconds
+            msgText.innerText = message;
+            msgText.className = "text-slate-700 text-2xl font-bold";
+
+            // Reset after 3 seconds
             setTimeout(() => {
-                header.style.backgroundColor = "transparent";
+                header.className = "header-panel rounded-2xl p-10 text-center mb-8 border-t-8 status-ready shadow-xl";
                 statusText.innerText = "SYSTEM READY";
-                msgText.innerText = "Place ID card under scanner";
+                statusText.className = "text-5xl font-extrabold tracking-tight mb-2 text-slate-900";
+                msgText.innerText = "Please scan ID card to proceed";
+                msgText.className = "text-slate-500 text-xl font-medium";
+                badge.className = "mb-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100 text-blue-700 font-extrabold text-xs uppercase tracking-wider";
             }, 3000);
         }
+
+        // Logic for checking scanner (kept your original logic)
+        setInterval(() => {
+            fetch('/canteen/get-latest-scan/')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status !== 'waiting') {
+                        updateUI(data.status, data.message);
+                        if (data.status === 'approved') {
+                            setTimeout(() => location.reload(), 3000);
+                        }
+                    }
+                });
+        }, 1000);
     </script>
 </body>
 </html>
