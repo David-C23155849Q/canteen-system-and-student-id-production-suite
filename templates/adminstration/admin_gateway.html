@@ -1,0 +1,198 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTRC | Admin Gateway</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f1f5f9; /* Slate-100 */
+        }
+        
+        /* Strict adherence to your college purple */
+        .mtrc-purple { color: #7030a0; }
+        .bg-mtrc-purple { background-color: #7030a0; }
+        
+        /* High-professional border styling */
+        .gateway-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0; /* Slate-200 */
+            transition: all 0.2s ease-in-out;
+        }
+
+        .gateway-card:hover {
+            border-color: #7030a0;
+            box-shadow: 0 10px 15px -3px rgba(112, 48, 160, 0.1), 0 4px 6px -2px rgba(112, 48, 160, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .pulsing-dot {
+            height: 10px; width: 10px;
+            background-color: #4ade80; /* Your green */
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .pulsing-dot::after {
+            content: "";
+            position: absolute;
+            top: -2px; left: -2px; width: 14px; height: 14px;
+            border-radius: 50%;
+            background-color: #4ade80;
+            opacity: 0.5;
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { transform: scale(1); opacity: 0.5; }
+            70% { transform: scale(2.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <nav class="w-full bg-white border-b border-slate-200 px-8 py-3 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+    <img src="{% static 'logo.png' %}" alt="MTRC Logo" class="h-10 w-auto object-contain">
+    
+    <div class="h-8 w-px bg-slate-200"></div>
+    <h1 class="text-xl font-extrabold text-slate-900 tracking-tight uppercase">
+        Morgenster Teachers <span class="mtrc-purple">College</span>
+    </h1>
+</div>
+
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-3 bg-slate-100 px-4 py-1.5 rounded-full border border-slate-200">
+                <div class="pulsing-dot"></div>
+                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">System Status</span>
+            </div>
+            
+            <div class="h-8 w-px bg-slate-200"></div>
+            
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-mtrc-purple text-white flex items-center justify-center font-black text-sm uppercase">
+                    {{ request.user.username|slice:":1" }}
+                </div>
+                <div class="leading-none">
+                    <p class="text-xs font-bold text-slate-900">{{ request.user.get_full_name|default:request.user.username }}</p>
+                    <p class="text-[10px] font-medium text-slate-400">System Administrator</p>
+                </div>
+                <a href="{% url 'logout' %}" class="ml-4 text-slate-400 hover:text-red-600 transition-colors text-lg"><i class="fa-solid fa-power-off"></i></a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex p-8 gap-8">
+        
+        <div class="flex-grow grid grid-cols-2 gap-8 content-start">
+            
+            <header class="col-span-2 mb-4">
+                <h2 class="text-3xl font-black text-slate-900 tracking-tight uppercase">Admin <span class="mtrc-purple">Gateway</span></h2>
+                <p class="text-slate-500 font-medium mt-1">Select an intelligence module to perform operations.</p>
+            </header>
+
+            <a href="{% url 'student_dashboard' %}" class="gateway-card p-10 flex gap-6 items-start">
+                <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">
+                    <i class="fa-solid fa-id-card-clip"></i>
+                </div>
+                <div>
+                    <h3 class="font-black text-slate-800 uppercase text-sm tracking-wide mb-2">Card Production</h3>
+                    <p class="text-xs text-slate-500 font-medium leading-relaxed">
+                        Generate and print student ID cards.
+                    </p>
+                    <div class="mt-6 flex items-center gap-2 mtrc-purple font-black text-xs uppercase tracking-widest">
+                        Enter Terminal <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </div>
+                </div>
+            </a>
+
+            <a href="{% url 'analytics' %}" class="gateway-card p-10 flex gap-6 items-start">
+                <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">
+                    <i class="fa-solid fa-chart-line-up"></i>
+                </div>
+                <div>
+                    <h3 class="font-black text-slate-800 uppercase text-sm tracking-wide mb-2">Canteen Analytics</h3>
+                    <p class="text-xs text-slate-500 font-medium leading-relaxed">
+                        Monitor meal consumption trends, staff efficiency and flag suspicious cheat attempts.
+                    </p>
+                    <div class="mt-6 flex items-center gap-2 mtrc-purple font-black text-xs uppercase tracking-widest">
+                        View Intelligence <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </div>
+                </div>
+            </a>
+
+            <a href="{% url 'monitor_dashboard' %}" class="gateway-card p-10 flex gap-6 items-start col-span-2">
+                <div class="w-16 h-16 bg-green-50 text-green-600 rounded-xl flex items-center justify-center text-3xl flex-shrink-0 border-2 border-green-200">
+                    <i class="fa-solid fa-desktop"></i>
+                </div>
+                <div>
+                    <h3 class="font-black text-slate-800 uppercase text-sm tracking-wide mb-2">Monitor Dashboard (Scanner Feed)</h3>
+                    <p class="text-xs text-slate-500 font-medium leading-relaxed">
+                        Access the live terminal view that canteen staff use to monitor the QR scanner feed in real time.
+                    </p>
+                    <div class="mt-6 flex items-center gap-2 text-green-600 font-black text-xs uppercase tracking-widest">
+                        Launch Live Feed <i class="fa-solid fa-display ml-1"></i>
+                    </div>
+                </div>
+            </a>
+
+            <a href="/admin/" class="gateway-card p-10 flex gap-6 items-start col-span-2">
+                <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-3xl flex-shrink-0 border-2 border-amber-200">
+                    <i class="fa-solid fa-database"></i>
+                </div>
+                <div>
+                    <h3 class="font-black text-slate-800 uppercase text-sm tracking-wide mb-2">Backend Database</h3>
+                    <p class="text-xs text-slate-500 font-medium leading-relaxed">
+                        Manage raw student records, reset staff accounts, and audit logs.
+                    </p>
+                    <div class="mt-6 flex items-center gap-2 text-amber-600 font-black text-xs uppercase tracking-widest">
+                        Open Django Admin <i class="fa-solid fa-gears ml-1"></i>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        <aside class="w-80 flex-shrink-0 gateway-card p-8 space-y-8">
+            <header class="text-center border-b border-slate-200 pb-6 mb-6">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Intelligence Suite</p>
+                <p class="text-lg font-black text-slate-900 uppercase">Live Status</p>
+                <p class="text-sm font-black text-mtrc-purple uppercase tracking-tight">{{ today_meals|default:"0" }} Meals Today</p>
+            </header>
+
+            <div class="space-y-3">
+                <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest">Operational Summary</h4>
+                
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p class="text-[10px] font-black text-slate-400 uppercase leading-none">Current Session</p>
+                    <p class="text-sm font-bold text-slate-900 mt-1">{{ active_session|default:"System Idle" }}</p>
+                    {% if active_session %}
+                        <div class="mt-2 text-[10px] font-black text-green-600 bg-green-50 px-3 py-1 rounded-full w-fit">ACTIVE</div>
+                    {% endif %}
+                </div>
+                
+                <div class="bg-red-50 p-4 rounded-xl border border-red-200">
+                    <p class="text-[10px] font-black text-red-400 uppercase leading-none">Cheat Attempts (Today)</p>
+                    <p class="text-xl font-black text-red-600 mt-1">{{ today_cheats|default:"0" }} Flagged</p>
+                    <p class="text-[10px] text-red-500 font-medium leading-tight mt-1">Suspect records are flagged for manual review.</p>
+                </div>
+            </div>
+
+            <div class="text-center border-t border-slate-200 pt-6">
+                <p class="text-[9px] text-slate-400 font-medium uppercase tracking-widest">MTRC Canteen Suite v1.0</p>
+                <p class="text-[8px] text-slate-300 font-bold">Zimbabwe Institution Management</p>
+            </div>
+        </aside>
+
+    </main>
+
+</body>
+</html>

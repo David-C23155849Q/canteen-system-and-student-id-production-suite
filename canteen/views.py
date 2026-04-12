@@ -13,6 +13,7 @@ from .models import Student, MealLog, ScanStatus, CanteenSession, CheatAttempt
 from .utils import generate_single_id
 from django.utils.timezone import localtime
 from django.db.models import Count
+from .models import Student
 
 
 # Helper Functions
@@ -335,6 +336,32 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def login_success_redirect(request):
     """
+    Traffic controller: Sends Admins to the Gateway and 
+    Canteen Staff to the Session Selection.
+    """
+    if request.user.is_superuser or request.user.is_staff:
+        # Admins now go to the Central Command Center
+        return redirect('admin_gateway')
+    else:
+        # Regular Staff go straight to starting a meal session
+        return redirect('select_session')
+
+@login_required
+@user_passes_test(is_admin)
+def admin_gateway(request):
+    """
+    The Landing Dashboard for Admins to choose between 
+    ID Production, Analytics, or Django Admin.
+    """
+    today = timezone.now().date()
+    
+    context = {
+        'today_meals': MealLog.objects.filter(timestamp__date=today).count(),
+        'today_cheats': CheatAttempt.objects.filter(attempt_time__date=today).count(),
+        'active_session': get_current_meal(),
+    }
+    return render(request, 'adminstration/admin_gateway.html', context)
+    """
     Redirects users to the correct dashboard based on their permissions.
     """
     if request.user.is_superuser or request.user.is_staff:
@@ -343,3 +370,20 @@ def login_success_redirect(request):
     else:
         # Regular Canteen Staff go to the Scanner monitor
         return redirect('select_session')
+    
+#bach printing
+def batch_print_view(request):
+    # Get the "ids" string from the URL: "MTE35745,MTJ34076..."
+    ids_param = request.GET.get('ids', '')
+    
+    if ids_param:
+        # Split the string by commas into a real Python list
+        student_ids = ids_param.split(',')
+        # Fetch all students whose ID is in that list
+        students = Student.objects.filter(student_id__in=student_ids)
+    else:
+        students = []
+
+    return render(request, 'canteen/batch_print.html', {
+        'students': students
+    })

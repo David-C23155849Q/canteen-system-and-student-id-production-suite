@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Print Terminal | {{ student.student_id }}</title>
+    <title>MTRC | Print Terminal | {{ student.student_id }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,165 +11,192 @@
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #f1f5f9; /* Slate-100 */
+            background-color: #f8fafc; 
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 40px 40px; /* Subtle grid for alignment feel */
+            background-size: 40px 40px;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
         }
-        
-        /* Realistic PVC Card Mockup with Light Theme Depth */
-        .pvc-card {
+
+        /* --- THE UI WRAPPER --- */
+        .print-stage {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 2px dashed #e2e8f0;
+            border-radius: 3rem;
+            padding: 4rem;
+            margin-bottom: 5rem;
+        }
+
+        /* --- LOCKED CARD DESIGN AREA --- */
+        .id-card-canvas {
+            width: 550px;
+            height: 350px;
+            background: white !important;
+            border-radius: 12px;
             position: relative;
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 
-                0 10px 15px -3px rgba(0, 0, 0, 0.1), 
-                0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                inset 0 0 0 1px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
             overflow: hidden;
-            border: 8px solid white; /* Mimics the card carrier/tray */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
-        .pvc-card:hover {
-            transform: scale(1.02);
+        .header-purple {
+            background: #7030a0 !important; 
+            height: 115px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white !important;
+            text-align: center;
         }
 
-        /* Shine effect for light theme */
-        .pvc-card::after {
-            content: "";
+        .footer-purple {
+            background: #7030a0 !important;
+            height: 35px;
+            width: 100%;
             position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.8) 50%, transparent 55%);
-            opacity: 0.3;
-            pointer-events: none;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white !important;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 1px;
         }
 
+        .profile-circle {
+            width: 135px;
+            height: 135px;
+            border-radius: 50%;
+            border: 5px solid #4ade80 !important;
+            overflow: hidden;
+            position: absolute;
+            left: 30px;
+            top: 130px;
+            background: #fff !important;
+        }
+
+        /* --- PRINT ENGINE FIXES --- */
         @media print {
             .no-print { display: none !important; }
-            body { background: white !important; background-image: none !important; padding: 0 !important; margin: 0 !important; }
-            .print-area { gap: 0 !important; margin: 0 !important; }
-            .pvc-card { 
-                box-shadow: none !important; 
-                border: none !important;
-                margin: 0 auto !important;
-                page-break-after: always;
-                transform: none !important;
+            body { background: white !important; background-image: none !important; padding: 0 !important; }
+            .print-stage { 
+                border: none !important; 
+                padding: 0 !important; 
+                margin: 0 !important;
+                background: transparent !important;
+                backdrop-filter: none !important;
+                display: block !important;
             }
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-        }
-
-        .print-btn-animate {
-            box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);
-            animation: pulse-blue 2s infinite;
-        }
-
-        @keyframes pulse-blue {
-            0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(79, 70, 229, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+            .id-card-canvas { 
+                box-shadow: none !important; 
+                margin: 0 auto 20px auto !important;
+                page-break-after: always;
+                border: 1px solid #eee !important;
+            }
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center py-10">
 
-    <nav class="no-print w-full max-w-4xl flex justify-between items-center mb-10 px-6 py-4 bg-white/80 backdrop-blur-md border border-slate-200 shadow-sm rounded-3xl sticky top-6 z-50">
-        <a href="{% url 'student_dashboard' %}" class="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold text-sm transition-colors">
-            <i class="fa-solid fa-chevron-left"></i>
-            Back to Registry
-        </a>
-
-        <div class="flex items-center gap-4">
-            <div class="hidden sm:block text-right border-r border-slate-200 pr-4">
-                <p class="text-[10px] font-black text-slate-400 uppercase">Queue Status</p>
-                <p class="text-xs font-bold text-indigo-600">Verified & Approved</p>
+    <nav class="no-print w-full max-w-5xl flex justify-between items-center mb-10 px-8 py-5 bg-white border border-slate-200 shadow-xl shadow-slate-200/50 rounded-[2.5rem] sticky top-6 z-[999]">
+        <div class="flex items-center gap-8">
+            <a href="{% url 'student_dashboard' %}" class="flex items-center gap-3 text-slate-500 hover:text-purple-600 transition-colors group">
+                <i class="fa-solid fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
+                <span class="text-sm font-extrabold uppercase tracking-widest">Back to Registry</span>
+            </a>
+            <div class="h-8 w-px bg-slate-200"></div>
+            <div>
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 leading-none mb-1">Production Terminal</p>
+                <p class="text-sm font-bold text-slate-900 tracking-tight">{{ student.student_id }}</p>
             </div>
-            <button onclick="window.print()" class="print-btn-animate bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-3 transition-all active:scale-95 shadow-lg shadow-indigo-100">
-                <i class="fa-solid fa-print text-sm"></i>
-                Start Printing
-            </button>
         </div>
+
+        <button type="button" onclick="window.print();" class="bg-slate-900 hover:bg-purple-700 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-3 transition-all active:scale-95 shadow-lg shadow-slate-200 cursor-pointer">
+            <i class="fa-solid fa-print"></i> Execute Print
+        </button>
     </nav>
 
-    <div class="print-area flex flex-col gap-10 items-center">
+    <div class="print-stage flex flex-col lg:flex-row gap-16 items-start">
         
-        <div class="flex flex-col items-center gap-4">
-            <div class="no-print flex items-center gap-2 bg-white px-4 py-1.5 rounded-full border border-slate-200 shadow-sm">
-                <span class="w-2 h-2 bg-indigo-500 rounded-full"></span>
-                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Front Perspective</span>
+        <div class="no-print w-64 space-y-6">
+            <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm">
+                <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 mb-4">
+                    <i class="fa-solid fa-id-badge text-lg"></i>
+                </div>
+                <h3 class="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Target Identity</h3>
+                <p class="text-sm font-black text-slate-900 uppercase leading-tight">{{ student.full_name }}</p>
             </div>
-            <div class="pvc-card">
-                <img src="/media/student_ids_purple_final/{{ student.student_id }}_FRONT.png" 
-                     alt="Front ID"
-                     class="w-[550px] h-auto block">
+
+            <div class="p-6 bg-emerald-50 rounded-3xl border border-emerald-100 shadow-sm">
+                <div class="flex items-center gap-3 text-emerald-700 mb-3">
+                    <i class="fa-solid fa-circle-check text-sm"></i>
+                    <h3 class="text-[11px] font-black uppercase tracking-widest">System Ready</h3>
+                </div>
+                <p class="text-[11px] text-emerald-600 font-bold leading-relaxed">Identity verified for Intake {{ student.student_intake }}.</p>
             </div>
+            
         </div>
-        
-        <div class="flex flex-col items-center gap-4">
-            <div class="no-print flex items-center gap-2 bg-white px-4 py-1.5 rounded-full border border-slate-200 shadow-sm">
-                <span class="w-2 h-2 bg-slate-400 rounded-full"></span>
-                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Reverse Side</span>
+
+        <div class="flex flex-col gap-10">
+            <div class="id-card-canvas">
+                {% load static %}
+                <div class="header-purple">
+                    <div class="absolute top-4 left-6"><img src="{% static 'logo.png' %}" class="h-14 w-auto object-contain"></div>
+                    <div class="absolute top-4 right-6"><img src="{% static 'uzlogo.png' %}" class="h-14 w-auto object-contain"></div>
+                    <h1 class="text-[14px] font-black uppercase leading-tight tracking-tight">Morgenster Teachers College</h1>
+                    <p class="text-[9px] font-medium italic opacity-90">A Reformed Church in Zimbabwe Institution</p>
+                    <p class="text-[8px] font-medium opacity-80 mt-1 max-w-[280px]">Ministry of Higher and Tertiary Education, Innovation, Science and Technology Development</p>
+                    <div class="mt-2 bg-green-500 px-6 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm">Student ID</div>
+                </div>
+
+                <div class="profile-circle">
+                    {% if student.photo %}<img src="{{ student.photo.url }}" class="w-full h-full object-cover">
+                    {% else %}<div class="flex items-center justify-center h-full text-slate-200"><i class="fa-solid fa-user text-5xl"></i></div>{% endif %}
+                </div>
+
+                <div class="absolute left-[185px] top-[145px] w-[340px]">
+                    <table class="w-full text-left">
+                        <tr class="leading-7">
+                            <td class="text-[11px] font-black text-slate-500 uppercase w-20">Name</td>
+                            <td class="text-xs font-extrabold text-slate-900 uppercase">: {{ student.full_name }}</td>
+                        </tr>
+                        <tr class="leading-7">
+                            <td class="text-[11px] font-black text-slate-500 uppercase">Intake</td>
+                            <td class="text-xs font-extrabold text-slate-900">: {{ student.student_intake }}</td>
+                        </tr>
+                        <tr class="leading-7">
+                            <td class="text-[11px] font-black text-slate-500 uppercase">Reg No.</td>
+                            <td class="text-xs font-extrabold text-slate-900">: {{ student.student_id }}</td>
+                        </tr>
+                    </table>
+                    <div class="mt-4 bg-green-500 text-white px-8 py-1 rounded-md text-[10px] font-black uppercase text-center w-fit">
+                        {% if "MTJ" in student.student_id %}Junior{% else %}ECD{% endif %}
+                    </div>
+                </div>
+                <div class="footer-purple">Light of the Nation</div>
             </div>
-            <div class="pvc-card">
-                <img src="/media/student_ids_purple_final/{{ student.student_id }}_BACK.png" 
-                     alt="Back ID"
-                     class="w-[550px] h-auto block">
+
+            <div class="id-card-canvas">
+                <div class="header-purple h-[50px]"><h2 class="text-[10px] font-black uppercase tracking-widest">MTRC</h2></div>
+                <div class="flex flex-col items-center justify-center h-[265px] px-10 text-center gap-6">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ student.student_id }}" class="w-32 h-32 border-4 border-slate-100 p-2 rounded-xl">
+                    <div class="space-y-2">
+                        <p class="text-[9px] font-black text-slate-800 uppercase">Security Instructions</p>
+                        <p class="text-[8px] text-slate-400 font-bold leading-tight uppercase text-center">This card is for official use only. If lost, please return to the Morgenster Teachers College administration office or Guard Room.</p>
+                    </div>
+                </div>
+                <div class="footer-purple text-[10px]">MTRC 2026</div>
             </div>
         </div>
     </div>
-
-    <footer class="no-print mt-16 max-w-2xl w-full bg-white border border-slate-200 p-10 rounded-[2.5rem] shadow-sm">
-        <div class="flex items-center gap-4 mb-6">
-            <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
-                <i class="fa-solid fa-circle-info text-lg"></i>
-            </div>
-            <h3 class="font-black text-slate-900 uppercase tracking-tight">Printer Configuration</h3>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="space-y-4">
-                <div class="flex gap-3">
-                    <i class="fa-solid fa-expand text-indigo-500 mt-1"></i>
-                    <div>
-                        <p class="text-sm font-bold text-slate-800">Scaling</p>
-                        <p class="text-xs text-slate-500">Set to "Actual Size" or 100%. Disable "Fit to Page".</p>
-                    </div>
-                </div>
-                <div class="flex gap-3">
-                    <i class="fa-solid fa-palette text-indigo-500 mt-1"></i>
-                    <div>
-                        <p class="text-sm font-bold text-slate-800">Color Profile</p>
-                        <p class="text-xs text-slate-500">Enable "Background Graphics" in the print dialog.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="space-y-4">
-                <div class="flex gap-3">
-                    <i class="fa-solid fa-crop text-indigo-500 mt-1"></i>
-                    <div>
-                        <p class="text-sm font-bold text-slate-800">Margins</p>
-                        <p class="text-xs text-slate-500">Set margins to "None" to ensure edge-to-edge printing.</p>
-                    </div>
-                </div>
-                <div class="flex gap-3">
-                    <i class="fa-solid fa-memory text-indigo-500 mt-1"></i>
-                    <div>
-                        <p class="text-sm font-bold text-slate-800">Card Type</p>
-                        <p class="text-xs text-slate-500">Standard CR-80 (85.60 x 53.98 mm) PVC Card.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <div class="no-print fixed bottom-10 left-10 flex items-center gap-3 bg-white border border-slate-200 p-2 pr-6 rounded-2xl shadow-xl">
-        <div class="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-xl font-black">
-            {{ student.full_name|slice:":1" }}
-        </div>
-        <div>
-            <p class="text-[10px] font-black text-slate-400 uppercase leading-none">Target Student</p>
-            <p class="text-xs font-bold text-slate-800">{{ student.full_name }}</p>
-        </div>
-    </div>
-
 </body>
 </html>
