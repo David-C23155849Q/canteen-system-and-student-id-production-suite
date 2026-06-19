@@ -54,8 +54,17 @@ The system uses a custom `@media print` CSS engine to ensure that ID cards and R
 
 1.  **Clone & Install Dependencies**:
     ```bash
-    git clone [https://github.com/your-username/mtrc-canteen-suite.git]
+    git clone https://github.com/Morgenster-Teachers-College-Official/Canteen-meal-tracking-system.git
+
+    cd Canteen-meal-tracking-system
+
+    python -m venv venv
+
+    venv\Scripts\activate   # Windows
+
     pip install -r requirements.txt
+
+    python manage.py createsuperuser
     ```
 2.  **Database Migration**:
     ```bash
