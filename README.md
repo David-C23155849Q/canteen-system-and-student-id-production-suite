@@ -1,7 +1,7 @@
 # 🛡️ MTRC | Canteen Intelligence & ID Suite v2.2
 **A Unified Ecosystem for Student Identification and Meal Security.**
 
-The MTRC Suite is a dual-sided Django application designed to manage the full lifecycle of a student's campus identity—from ID card generation and barcode printing to secure canteen meal tracking.
+The MTRC Suite is a dual-sided Django application designed to manage the full lifecycle of a student's campus identity from ID card generation and barcode printing to secure canteen meal tracking.
 
 ---
 
@@ -9,11 +9,11 @@ The MTRC Suite is a dual-sided Django application designed to manage the full li
 
 ### 1. Admin Control Center (The Registry)
 * **ID Production Suite**: A dedicated platform to design and print student IDs directly from the browser.
-* **Barcode/QR Generator**: Automatically generates unique, scannable identifiers for every new intake.
+* **QR Generator**: Automatically generates unique, scannable identifiers for every new intake.
 * **Data Analytics**: Critical analysis reports on student attendance, peak meal times, and session-based participation.
 
 ### 2. Canteen Operations (The Gatekeeper)
-* **Scanner Integration**: Real-time barcode/QR scanning to verify student eligibility.
+* **Scanner Integration**: Real-time QR scanning to verify student eligibility.
 * **Anti-Cheat System**: Instant alerts and logic-gate blocking for "double-dipping" or unauthorized meal attempts.
 * **Session Management**: Tracks breakfast, lunch, and dinner sessions to ensure 1-meal-per-student-per-session compliance.
 * **Data Analytics**: Critical analysis reports on student attendance, peak meal times, and session-based participation.
