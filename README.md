@@ -77,7 +77,7 @@ The system uses a custom `@media print` CSS engine to ensure that ID cards and R
     This part in not necessary if you dont have the equipment yet, laptop (current device) webcam will do .
     ```
 
-5.  **Run Server**:
+5.  **Run both servers**:
     ```bash
     python qr_scanner.py
     python manage.py runserver
