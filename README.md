@@ -54,7 +54,7 @@ The system uses a custom `@media print` CSS engine to ensure that ID cards and R
 
 1.  **Clone & Install Dependencies**:
     ```bash
-    git clone https://github.com/Morgenster-Teachers-College-Official/Canteen-meal-tracking-system.git
+    git clone https://github.com/David-C23155849Q/canteen-system-and-student-id-production-suite.git
 
     cd Canteen-meal-tracking-system
 
@@ -92,5 +92,4 @@ The system uses a custom `@media print` CSS engine to ensure that ID cards and R
 
 ---
 
-## ⚖️ License
-Internal Use Only - Morgenster Teachers College © 2026
+
